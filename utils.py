@@ -19,12 +19,21 @@ def delete_missing_data(df):
     df.reset_index(inplace=True, drop=True)
     return df
 
-def plot_data(x,y):
+def plot_standard_data(x,y, x_label, y_label, title):
+    plt.figure(figsize=(10,10))
     plt.bar(x,y, width=0.25)
     plt.yticks(np.arange(0, len(x)+1, 5))
-    plt.xlabel("Amount of tries")
-    plt.ylabel("Day")
-    plt.title("Amount of tries in 70 days")
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title(title)
+    plt.show()
+
+def plot_weather_data(x,y, x_label, y_label, title):
+    plt.figure(figsize=(10,10))
+    plt.bar(x,y, width=0.25)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title(title)
     plt.show()
 
 def computed_statistics(df):
@@ -95,4 +104,14 @@ def seperate_morning_night(df):
     clean_night_df = delete_missing_data(uncleaned_night_df)
     return clean_morning_df, clean_night_df
 
-
+def seperate_week_weekday(df):
+    week_df = df.copy()
+    weekend_df = df.copy()
+    for value in df["Day"]:
+        if "Sunday" in value or "Saturday" in value:
+            week_df.replace(value, np.NaN, inplace=True)
+        if "Monday" in value or "Tuesday" in value or "Wednesday" in value or "Thursday" in value or "Friday" in value: 
+            weekend_df.replace(value, np.NaN, inplace=True)
+    clean_week_df = delete_missing_data(week_df)
+    clean_weekend_df = delete_missing_data(weekend_df)
+    return clean_week_df, clean_weekend_df
