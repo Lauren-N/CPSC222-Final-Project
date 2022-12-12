@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn import preprocessing
 
 """
 Name: Lauren Nguyen
@@ -115,3 +116,30 @@ def seperate_week_weekday(df):
     clean_week_df = delete_missing_data(week_df)
     clean_weekend_df = delete_missing_data(weekend_df)
     return clean_week_df, clean_weekend_df
+
+def format_data(df):
+    le = preprocessing.LabelEncoder()
+    le.fit(df["Day"])
+    df["Encoded Day"] = le.transform(df["Day"])
+
+    le.fit(df["Got it"])
+    df["Encoded Got it"] = le.transform(df["Got it"])
+
+    # # Converting time, 0 = before noon and 1 = after noon
+    # for item in df["Time"]:
+    #     if "AM" in item:
+    #         df.replace(item, 0.0, inplace=True)
+    #     else:
+    #         df.replace(item, 1.0, inplace=True)
+
+    # Converting the words based on uniqueness of letters
+    for item in df["Word"]:
+        if 'j' in item or 'q' in item or 'z' in item or 'x' in item or 'J' in item or 'Q' in item or 'Z' in item or 'X' in item:
+            df.replace(item, 3.0, inplace=True)
+        elif 'f' in item or 'F' in item or 'v' in item or 'V' in item or 'k' in item or 'K' in item:
+            df.replace(item, 2.0, inplace=True)
+        else:
+            df.replace(item, 1.0, inplace=True)
+
+    df.drop(["Got it", "Tries", "Date", "Day", "Time"], axis=1, inplace=True)
+    return df, 
