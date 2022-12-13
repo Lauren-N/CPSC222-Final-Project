@@ -39,8 +39,7 @@ def plot_weather_data(x,y, x_label, y_label, title):
     plt.show()
 
 def computed_statistics(df):
-    # stats_list = [] stats list to return
-
+    stats_list = []
     # Total Wordles
     total_wordles = len(df)
     stats_list.append(total_wordles)
