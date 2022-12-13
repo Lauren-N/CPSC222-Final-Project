@@ -11,26 +11,27 @@ Date: 12/3/2022
 Description: utility file to help with my project
 """
 
+# function that reads in a filename and returns a dataframe with the info in the csv file
 def read_file(filename):
     df = pd.read_csv(filename)
     return df
 
 def delete_missing_data(df):
-    df.dropna(axis=0, how='any', thresh=None, inplace=True)
-    df.reset_index(inplace=True, drop=True)
+    df.dropna(axis=0, how='any', thresh=None, inplace=True) # deleting any null values
+    df.reset_index(inplace=True, drop=True) # resetting index of the df
     return df
 
 def plot_standard_data(x,y, x_label, y_label, title):
-    plt.figure(figsize=(10,10))
-    plt.bar(x,y, width=0.25)
-    plt.yticks(np.arange(0, len(x)+1, 5))
+    plt.figure(figsize=(10,10)) # making figure bigger
+    plt.bar(x,y, width=0.25) # plotting bar with x and y values sent in
+    plt.yticks(np.arange(0, len(x)+1, 5)) # altering the y-axis to interval every 5 days
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(title)
     plt.show()
 
 def plot_weather_data(x,y, x_label, y_label, title):
-    plt.figure(figsize=(10,10))
+    plt.figure(figsize=(10,10)) # making figure bigger
     plt.bar(x,y, width=0.25)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
@@ -38,7 +39,7 @@ def plot_weather_data(x,y, x_label, y_label, title):
     plt.show()
 
 def computed_statistics(df):
-    stats_list = []
+    # stats_list = [] stats list to return
 
     # Total Wordles
     total_wordles = len(df)
@@ -48,11 +49,11 @@ def computed_statistics(df):
     uncleaned_morning_df = df.copy()
     uncleaned_night_df = df.copy()
     for value in df["Time"]:
-        if "AM" in value:
+        if "AM" in value: # replacing any AM value with a NULL
             uncleaned_night_df.replace(value, np.NaN, inplace=True)
-        if "PM" in value:
+        if "PM" in value: # replacing any PM value with a NULL
             uncleaned_morning_df.replace(value, np.NaN, inplace=True)
-    clean_morning_df = delete_missing_data(uncleaned_morning_df)
+    clean_morning_df = delete_missing_data(uncleaned_morning_df) # calling helper function to delete the new null values
     clean_night_df = delete_missing_data(uncleaned_night_df)
 
     # Total Wordles completed in the morning
@@ -93,6 +94,7 @@ def computed_statistics(df):
 
     return stats_list
 
+# helper function just to seperate my df into morning and night
 def seperate_morning_night(df):
     uncleaned_morning_df = df.copy()
     uncleaned_night_df = df.copy()
@@ -105,6 +107,7 @@ def seperate_morning_night(df):
     clean_night_df = delete_missing_data(uncleaned_night_df)
     return clean_morning_df, clean_night_df
 
+# helper function to seperate my df into weeks and weekends
 def seperate_week_weekday(df):
     week_df = df.copy()
     weekend_df = df.copy()
@@ -118,6 +121,7 @@ def seperate_week_weekday(df):
     return clean_week_df, clean_weekend_df
 
 def format_data(df):
+    # using label encoder to transform the days of the week into numerival values
     le = preprocessing.LabelEncoder()
     le.fit(df["Day"])
     df["Encoded Day"] = le.transform(df["Day"])
@@ -138,5 +142,6 @@ def format_data(df):
         else:
             df.replace(item, 1.0, inplace=True)
 
+    # dropping irrelevant values
     df.drop(["Got it", "Date", "Day"], axis=1, inplace=True)
     return df
