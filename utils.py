@@ -38,11 +38,17 @@ def plot_weather_data(x,y, x_label, y_label, title):
     plt.title(title)
     plt.show()
 
-def computed_statistics(df):
+def computed_statistics(df, weekday_df):
     stats_list = []
     # Total Wordles
     total_wordles = len(df)
     stats_list.append(total_wordles)
+
+    # Seperating the week and weekend into two different dataframes
+    week_df, weekend_df = seperate_week_weekday(weekday_df)
+
+    # seperating words on difficulty
+    easy_df, medium_df, hard_df = seperate_words(df)
 
     # creating two new df with pm and am times
     uncleaned_morning_df = df.copy()
@@ -75,22 +81,41 @@ def computed_statistics(df):
     std_tries = np.std(df["Tries"])
     stats_list.append(std_tries)
 
-    # # Average tries in the morning
+    # Average tries in the morning
     average_tries_morning = clean_morning_df["Tries"].mean()
     stats_list.append(average_tries_morning)
 
-    # # Standard deviation of tries in the morning
+    # Standard deviation of tries in the morning
     std_tries_morning = np.std(clean_morning_df["Tries"])
     stats_list.append(std_tries_morning)
 
-    # # Average tries in the night
+    # Average tries in the night
     average_tries_night = clean_night_df["Tries"].mean()
     stats_list.append(average_tries_night)
 
-    # # Standard deviation of tries in the night
+    # Standard deviation of tries in the night
     std_tries_night = np.std(clean_night_df["Tries"])
     stats_list.append(std_tries_night)
 
+    # Average of the weekday scores
+    avg_weekday_score = week_df["Tries"].mean()
+    stats_list.append(avg_weekday_score)
+
+    # Average weekend score
+    avg_weekend_score = weekend_df["Tries"].mean()
+    stats_list.append(avg_weekend_score)
+
+    # Average easy word Score
+    avg_easy = easy_df["Tries"].mean()
+    stats_list.append(avg_easy)
+
+    # Average medium word Score
+    avg_med = medium_df["Tries"].mean()
+    stats_list.append(avg_med)
+
+    # Average hard word Score
+    avg_hard = hard_df["Tries"].mean()
+    stats_list.append(avg_hard)
     return stats_list
 
 # helper function just to seperate my df into morning and night
@@ -144,3 +169,24 @@ def format_data(df):
     # dropping irrelevant values
     df.drop(["Got it", "Date", "Day"], axis=1, inplace=True)
     return df
+
+def seperate_words(df):
+    easier_df = df.copy()
+    average_df = df.copy()
+    harder_df = df.copy()
+
+    for item in df["Word"]:
+        if 'j' in item or 'q' in item or 'z' in item or 'x' in item or 'J' in item or 'Q' in item or 'Z' in item or 'X' in item:
+            easier_df.replace(item, np.NaN, inplace=True)
+            average_df.replace(item, np.NaN, inplace=True)
+        elif 'f' in item or 'F' in item or 'v' in item or 'V' in item or 'k' in item or 'K' in item:
+            easier_df.replace(item, np.NaN, inplace=True)
+            harder_df.replace(item, np.NaN, inplace=True)
+        elif 'j' not in item or 'q' not in item or 'z' not in item or 'x' not in item or 'J' not in item or 'Q' not in item or 'Z' not in item or 'X' not in item or 'f' not in item or 'F' not in item or 'v' not in item or 'V' not in item or 'k' not in item or 'K' not in item:
+            average_df.replace(item, np.NaN, inplace=True)
+            harder_df.replace(item, np.NaN, inplace=True)
+    clean_easy = delete_missing_data(easier_df)
+    clean_average = delete_missing_data(average_df)
+    clean_harder = delete_missing_data(harder_df)
+
+    return clean_easy, clean_average, clean_harder
