@@ -150,12 +150,12 @@ def format_data(df):
     le.fit(df["Day"])
     df["Encoded Day"] = le.transform(df["Day"])
 
-    # # Converting time, 0 = before noon and 1 = after noon
+    # Converting time, 0 = before noon and 1 = after noon
     for item in df["Time"]:
-        if "AM" in item:
-            df.replace(item, 0.0, inplace=True)
+        if "PM" in item:
+            df.replace(item, "1.0", inplace=True)
         else:
-            df.replace(item, 1.0, inplace=True)
+            df.replace(item, "0.0", inplace=True)
 
     # Converting the words based on uniqueness of letters
     for item in df["Word"]:
